@@ -49,7 +49,7 @@ class S3
 	private static $__secretKey = null; // AWS Secret key
 	private static $__sslKey = null;
 
-	public static $endpoint = 's3.amazonaws.com';
+	public static $endpoint = null;
 	public static $proxy = null;
 
 	public static $useSSL = false;
@@ -73,7 +73,7 @@ class S3
 	* @param boolean $useSSL Enable SSL
 	* @return void
 	*/
-	public function __construct($accessKey = null, $secretKey = null, $useSSL = false, $endpoint = 's3.amazonaws.com')
+	public function __construct($accessKey = null, $secretKey = null, $useSSL = false, $endpoint = null)
 	{
 		if ($accessKey !== null && $secretKey !== null)
 			self::setAuth($accessKey, $secretKey);
@@ -1694,9 +1694,9 @@ final class S3Request
 	* @param string $uri Object URI
 	* @return mixed
 	*/
-	function __construct($verb, $bucket = '', $uri = '', $endpoint = 's3.amazonaws.com')
+	function __construct($verb, $bucket = '', $uri = '', $endpoint)
 	{
-		$this->endpoint = $endpoint;
+		$this->endpoint = get_config('s3', 'endpoint');
 		$this->verb = $verb;
 		$this->bucket = $bucket;
 		$this->uri = $uri !== '' ? '/'.str_replace('%2F', '/', rawurlencode($uri)) : '/';

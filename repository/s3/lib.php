@@ -46,7 +46,8 @@ class repository_s3 extends repository {
         parent::__construct($repositoryid, $context, $options);
         $this->access_key = get_config('s3', 'access_key');
         $this->secret_key = get_config('s3', 'secret_key');
-        $this->s = new S3($this->access_key, $this->secret_key);
+        $this->endpoint = get_config('s3', 'endpoint');
+        $this->s = new S3($this->access_key, $this->secret_key, $this->endpoint);
         $this->s->setExceptions(true);
     }
 
@@ -77,6 +78,9 @@ class repository_s3 extends repository {
         global $CFG, $OUTPUT;
         if (empty($this->access_key)) {
             throw new moodle_exception('needaccesskey', 'repository_s3');
+        }
+        if (empty($this->endpoint)) {
+            throw new moodle_exception('needendpoint','repository_s3');
         }
 
         $list = array();
@@ -229,18 +233,21 @@ class repository_s3 extends repository {
     }
 
     public static function get_type_option_names() {
-        return array('access_key', 'secret_key', 'pluginname');
+        return array('access_key', 'secret_key', 'pluginname','endpoint');
     }
 
     public static function type_config_form($mform, $classname = 'repository') {
         parent::type_config_form($mform);
         $strrequired = get_string('required');
-        $mform->addElement('text', 'access_key', get_string('access_key', 'repository_s3'));
+        $mform->addElement('text', 'access_key',  get_string('access_key', 'repository_s3'));
         $mform->setType('access_key', PARAM_RAW_TRIMMED);
         $mform->addElement('text', 'secret_key', get_string('secret_key', 'repository_s3'));
         $mform->setType('secret_key', PARAM_RAW_TRIMMED);
+    	$mform->addElement('text','endpoint', get_string('endpoint', 'repository_s3'));
+    	$mform->setType('endpoint', PARAM_RAW_TRIMMED);
         $mform->addRule('access_key', $strrequired, 'required', null, 'client');
         $mform->addRule('secret_key', $strrequired, 'required', null, 'client');
+	    $mform->addRule('endpoint', $strrequired, 'required', null, 'client');
     }
 
     /**
