@@ -82,7 +82,7 @@ class S3
 	 * @acess public
 	 * @static
 	 */
-	public static $endpoint = 's3.amazonaws.com';
+	public static $endpoint = null;
 	
 	/**
 	 * Proxy information
@@ -182,7 +182,7 @@ class S3
 	* @param string $endpoint Amazon URI
 	* @return void
 	*/
-	public function __construct($accessKey = null, $secretKey = null, $useSSL = false, $endpoint = 's3.amazonaws.com')
+	public function __construct($accessKey = null, $secretKey = null, $useSSL = false, $endpoint = null)
 	{
 		if ($accessKey !== null && $secretKey !== null)
 			self::setAuth($accessKey, $secretKey);
@@ -2000,10 +2000,10 @@ final class S3Request
 	* @param string $endpoint AWS endpoint URI
 	* @return mixed
 	*/
-	function __construct($verb, $bucket = '', $uri = '', $endpoint = 's3.amazonaws.com')
+	function __construct($verb, $bucket = '', $uri = '', $endpoint)
 	{
 		
-		$this->endpoint = $endpoint;
+		$this->endpoint = get_config('s3', 'endpoint');
 		$this->verb = $verb;
 		$this->bucket = $bucket;
 		$this->uri = $uri !== '' ? '/'.str_replace('%2F', '/', rawurlencode($uri)) : '/';
